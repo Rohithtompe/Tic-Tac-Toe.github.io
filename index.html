@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe by Rohith Tompe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to bottom right, #2c3e50, #34495e);
+            color: #ecf0f1;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #f39c12;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        #container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        .box {
+            width: 100%;
+            padding-top: 100%; /* Maintain square aspect ratio */
+            position: relative;
+            background: linear-gradient(to bottom right, #ecf0f1, #bdc3c7);
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+        }
+
+        .box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .box.activeBox {
+            background: linear-gradient(to bottom right, #27ae60, #2ecc71);
+            color: white;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+        }
+
+        .box span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(to bottom right, #2980b9, #3498db);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            text-align: center;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .alert p {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background: #c0392b;
+        }
+
+        #pk {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #bdc3c7;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 500px) {
+            #container {
+                gap: 10px;
+            }
+
+            .box span {
+                font-size: 2rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            button {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div id="container">
+        <div class="box" id="box1" onclick="play(this)" data-player="none"><span></span></div>
+        <div class="box" id="box2" onclick="play(this)" data-player="none"><span></span></div>
+        <div class="box" id="box3" onclick="play(this)" data-player="none"><span></span></div>
+        <div class="box" id="box4" onclick="play(this)" data-player="none"><span></span></div>
+        <div class="box" id="box5" onclick="play(this)" data-player="none"><span></span></div>
+        <div class="box" id="box6" onclick="play(this)" data-player="none"><span></span></div>
+        <div class="box" id="box7" onclick="play(this)" data-player="none"><span></span></div>
+        <div class="box" id="box8" onclick="play(this)" data-player="none"><span></span></div>
+        <div class="box" id="box9" onclick="play(this)" data-player="none"><span></span></div>
+    </div>
+    <div id="pk">Created by Rohith Tompe</div>
+    <script>
+        let playerTurn = "X";
+        let moves = 0;
+        let isGameOver = false;
+
+        function play(box) {
+            if (box.dataset.player === "none" && !isGameOver) {
+                box.querySelector("span").textContent = playerTurn;
+                box.dataset.player = playerTurn;
+                moves++;
+                checkWinner();
+                playerTurn = playerTurn === "X" ? "O" : "X";
+            }
+        }
+
+        function checkWinner() {
+            const winningCombinations = [
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9],
+                [1, 4, 7],
+                [2, 5, 8],
+                [3, 6, 9],
+                [1, 5, 9],
+                [3, 5, 7],
+            ];
+
+            for (let combination of winningCombinations) {
+                const [a, b, c] = combination;
+                const boxA = document.getElementById(`box${a}`);
+                const boxB = document.getElementById(`box${b}`);
+                const boxC = document.getElementById(`box${c}`);
+
+                if (
+                    boxA.dataset.player === boxB.dataset.player &&
+                    boxB.dataset.player === boxC.dataset.player &&
+                    boxA.dataset.player !== "none"
+                ) {
+                    isGameOver = true;
+                    boxA.classList.add("activeBox");
+                    boxB.classList.add("activeBox");
+                    boxC.classList.add("activeBox");
+                    showAlert(`Player ${boxA.dataset.player} Wins!`);
+                    return;
+                }
+            }
+
+            if (moves === 9) {
+                isGameOver = true;
+                showAlert("It's a Draw!");
+            }
+        }
+
+        function showAlert(message) {
+            const alertBox = document.createElement("div");
+            alertBox.className = "alert";
+            alertBox.innerHTML = `
+                <p>${message}</p>
+                <button onclick="resetGame()">Restart</button>
+            `;
+            document.body.appendChild(alertBox);
+        }
+
+        function resetGame() {
+            const boxes = document.querySelectorAll(".box");
+            boxes.forEach(box => {
+                box.querySelector("span").textContent = "";
+                box.dataset.player = "none";
+                box.classList.remove("activeBox");
+            });
+            playerTurn = "X";
+            moves = 0;
+            isGameOver = false;
+            document.querySelector(".alert").remove();
+        }
+    </script>
+</body>
+
+</html>
